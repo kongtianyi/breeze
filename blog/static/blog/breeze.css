@@ -1,0 +1,140 @@
+body {
+	background-color: #DDDDDD;
+}
+
+.head {
+	background-color: #ffffff;
+	border-radius: 0px 0px 15px 15px;
+	margin: 0px 0px 30px 0px;
+	padding: 0px 0px 10px 0px;
+	width: 100%;
+}
+
+.head-h1 {
+	margin: 20px 0px 0px 10%;
+	padding: 0px;
+	font-family: "华文行楷", "lucida grande", "lucida sans unicode", lucida, helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+}
+
+.head-p {
+	margin: 5px 0px 10px 10%;
+	font-size: medium;
+	font-family: "lucida grande", "lucida sans unicode", lucida, helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+}
+
+#nav {
+	margin: 40px 0px 0px 0px;
+}
+
+#nav a {
+	padding: 0px 0px 0px 5%;
+	font-size: large;
+}
+
+.container {
+	width: 95%;
+}
+
+.board {
+	background-color: #ffffff;
+	border-radius: 15px;
+	margin: 0px 0px 30px 0px;
+	padding: 5px 20px 5px 20px; 
+}
+
+.board h1,h2 {
+	margin: 20px 0px 20px 0px;
+}
+
+.summerys ul {
+	padding: 0px;
+}
+
+.summerys li {
+	list-style-type: none;
+}
+
+.tags {
+	float: left;
+}
+
+.nums {
+	float: right;
+}
+
+.nums span {
+	color: gray;
+}
+
+.content {
+	font-size: medium;
+	margin: 30px 10px 30px 10px;
+}
+
+.content p {
+	line-height: 36px;
+	margin: 10px 0px 15px 0px;
+}
+
+.bpage {
+	text-align: right;
+	margin: 0 auto;
+}
+
+.panel-body li {
+	list-style-type: none;
+}
+
+.foot {
+	background-color: #FFFFFF;
+	border-radius: 15px 15px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	padding: 5px 0px 5px 0px;
+	width: 100%;
+	text-align: center;
+}
+
+.foot p {
+	color: gray;
+	margin: 0 auto;
+	padding: 0;
+}
+
+.comments ul {
+	padding: 0px 0px 0px 0px;
+}
+
+.comments li {
+	list-style-type: none;
+}
+
+.comment-content {
+	margin: 0px 0px 0px 10px;
+	//padding: 0px 0px 0px 0px;
+}
+
+/*作用是消除浮动的副作用*/
+.clear {
+	clear: both;
+}
+
+/* 屏幕宽度小于1200px时 */
+@media screen and (max-width: 1200px){
+  	.head-h1 {
+		text-align: center;
+		margin: 20px 0px 0px 0px;
+		padding: 0px;
+		font-family: "华文行楷", "lucida grande", "lucida sans unicode", lucida, helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+	}
+
+	.head-p {
+		text-align: center;
+		margin: 5px 0px 10px 0px;
+		font-size: medium;
+		font-family: "lucida grande", "lucida sans unicode", lucida, helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
+	}
+
+	#nav {
+		text-align: center;
+	}
+}

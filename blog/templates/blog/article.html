@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{ blog_param.title }} | {{ data.title }}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- 动态背景 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
+	{% load static %}
+    <link rel="stylesheet" href="{% static 'blog/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'blog/simditor-2.3.6/styles/simditor.css' %}">
+	<link rel="stylesheet" href="{% static 'blog/simditor-markdown-master/styles/simditor-markdown.css' %}" media="screen" charset="utf-8" />
+	<link rel="stylesheet" type="text/css" href="{% static 'blog/breeze.css' %}?v=014">
+</head>
+<body>
+	<div class="row head">
+		<div class="col-lg-8">
+			<h1 class="head-h1"><a href="/">{{ blog_param.title }}</a></h1>
+			<p class="head-p">{{ blog_param.sub_title }}</p>
+		</div>
+		<div class="col-lg-4" id="nav">
+			&nbsp&nbsp
+			<a href="/">主页</a>
+			<a href="/2017/11/19/about">关于我</a>
+			<a href="http://blog.csdn.net/qq_30242609" target="blank">CSDN博客</a>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-9" id="main">
+				<div class="board" id="main">
+					<h1><a href="/{{ data.url }}">{{data.title}}</a></h1>
+                    {% for tag in data.tags %}
+					<p class="tags">
+      					<span class="label label-success">
+      						<i class="fa fa-tag" aria-hidden="true"></i>
+      						&nbsp{{ tag }}
+      					</span>
+      					&nbsp
+      				</p>
+                    {% endfor %}
+					<p class="nums">
+      					<span>发表于：{{ data.create_time }}</span>&nbsp&nbsp&nbsp&nbsp
+      					<i class="fa fa-eye" aria-hidden="true"></i>&nbsp{{ data.uv }}&nbsp&nbsp
+      					<i class="fa fa-comment-o" aria-hidden="true"></i>&nbsp{{ data.comment_count }}
+      				</p>
+      				<!-- 此处解决浮动错位 -->
+      				<div class="clear"></div>
+                    <div class="content">
+                        {{ data.content|safe }}
+                        <div  style="text-align: center">
+                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal">赏</button>
+                        </div>
+                        <hr>
+                        <ul class="pager">
+                            {% if not pre_art %}
+                                <li class="previous disabled"><a href="#"><span aria-hidden="true">&larr;</span>没有了哦</a></li>
+                            {% else %}
+                                <li class="previous"><a href="/{{ pre_art }}"><span aria-hidden="true">&larr;</span>上一篇</a></li>
+                            {% endif %}
+                            {% if not next_art %}
+                                <li class="next disabled"><a href="#">没有了哦<span aria-hidden="true">&rarr;</span></a></li>
+                            {% else %}
+                                <li class="next"><a href="/{{ next_art }}">下一篇<span aria-hidden="true">&rarr;</span></a></li>
+                            {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+				</div>
+				<div class="panel panel-success comments">
+					<div class="panel-heading">网友评论</div>
+					<div class="panel-body">
+						<ul id="comments-ul">
+						</ul>
+					</div>
+				</div>
+				<div class="panel panel-success">
+					<div class="panel-heading">我要评论</div>
+					<div class="panel-body">
+						<form role="form" onsubmit="return check_comment()">
+							<div class="form-group">
+					 			<label for="author">昵称</label>
+					 			<input type="text" class="form-control" id="author" name="author" placeholder="你的大名"/>
+							</div>
+							<div class="form-group">
+					 			<label for="email">邮箱</label>
+					 			<input type="text" class="form-control" id="email" name="email" placeholder="希望能联系到你^_^" />
+							</div>
+							<div class="form-group">
+					 			<label for="url">个人主页</label>
+					 			<input type="text" class="form-control" id="url" name="url" placeholder="博主会回访的呦~" />
+							</div>
+							<textarea id="content" name="content"></textarea>
+                            <input type="hidden" name="comment_parent" id="comment_parent" value="0">
+                            <input type="hidden" name="article_id" id="article_id" value="{{ data.id }}">
+							</br>
+							<button type="submit" class="btn btn-primary">评论</button>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-3">
+				<div class="panel panel-success">
+					<div class="panel-heading">文章分类</div>
+					<div class="panel-body">
+						<ul>
+                            {% for category in categorys %}
+                                <li><a href="/categories/{{ category.category_name }}">{{ category.category_name }}({{ category.count }})</a></li>
+                            {% endfor %}
+						</ul>
+					</div>
+				</div>
+				<div class="panel panel-success">
+					<div class="panel-heading">最新评论</div>
+					<div class="panel-body">
+						<ul id="last-comments-ul">
+						</ul>
+					</div>
+				</div>
+				<div class="panel panel-success">
+					<div class="panel-heading">社交频道</div>
+					<div class="panel-body">
+                        <ul>
+                            <li>
+                                <a href="https://github.com/kongtianyi" target="blank"><i class="fa fa-github fa-2x" aria-hidden="true"></i></a>
+						        <a href="http://weibo.com/u/5484257648" target="blank"><i class="fa fa-weibo fa-2x" aria-hidden="true"></i></a>
+						        <a href="https://twitter.com/KongtianyiCoder" target="blank"><i class="fa fa-twitter fa-2x" aria-hidden="true"></i></a>
+						        <a href="598515595" target="blank"><i class="fa fa-qq fa-2x" aria-hidden="true"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+				</div>
+				<div class="panel panel-success">
+					<div class="panel-heading">友情链接</div>
+					<div class="panel-body">
+                        {% for link in blog_param.friend_links %}
+                            <ul>
+							    <li><a href="{{ link.url }}" target="_blank">{{ link.title }}</a></li>
+						    </ul>
+                        {% endfor %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="foot">
+        <p>{{ blog_param.uv }}个小伙伴来访过，{{ blog_param.pv }}次点击，感谢有你。</p>
+		<p>Copyright © 2017 kongtianyi.</p>
+	</div>
+    <!-- 模态框 -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">如果阁下觉得写的还可以的话，就请我喝杯Java吧~</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="text-align: center">
+                    <div class="col-xs-6 col-md-4">
+                        <img src="http://okmg2bytk.bkt.clouddn.com/image/pay/zhifubao.jpg" class="img-responsive center-block" alt="支付宝">
+                    </div>
+                    <div class="col-xs-6 col-md-4">
+                        <img src="http://okmg2bytk.bkt.clouddn.com/image/pay/jingdong.jpg" class="img-responsive center-block" alt="京东支付">
+                    </div>
+                    <div class="col-xs-6 col-md-4">
+                        <img src="http://okmg2bytk.bkt.clouddn.com/image/pay/weixin.png" class="img-responsive center-block" alt="微信">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="text-align: center;">
+                <p>推荐使用京东支付（认真脸）。</p>
+            </div>
+        </div>
+    </div>
+</div>
+	<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+	<!-- simditor -->
+	<script type="text/javascript" src="{% static 'blog/simditor-2.3.6/scripts/jquery.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'blog/simditor-2.3.6/scripts/module.js' %}"></script>
+	<script type="text/javascript" src="{% static 'blog/simditor-2.3.6/scripts/hotkeys.js' %}"></script>
+	<script type="text/javascript" src="{% static 'blog/simditor-2.3.6/scripts/uploader.js' %}"></script>
+	<script type="text/javascript" src="{% static 'blog/simditor-2.3.6/scripts/simditor.js' %}"></script>
+	<!-- simditor markdowm -->
+	<script type="text/javascript" src="{% static 'blog/marked-master/lib/marked.js' %}"></script>
+	<script type="text/javascript" src="{% static 'blog/to-markdown-master/dist/to-markdown.js' %}"></script>
+	<script type="text/javascript" src="{% static 'blog/simditor-markdown-master/lib/simditor-markdown.js' %}"></script>
+	<script type="text/javascript">
+		var editor = new Simditor({
+  			textarea: $('#content'),
+  			pasteImage: true,
+  			placeholder: "伯牙子期，你在哪里~",
+  			toolbar: ['title', 'bold', 'italic', 'underline', 'strikethrough', 'color', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent', 'alignment', '|', 'markdown']
+		});
+	</script>
+	<!-- 返回顶部按钮 -->
+	<script type="text/javascript" src="{% static 'blog/jquery.goup.js' %}"></script>
+	<script type="text/javascript">
+        $(document).ready(function () {
+            $.goup({
+                trigger: 100,
+                bottomOffset: 50,
+                locationOffset: 100,
+                title: '返回顶部',
+            });
+        });
+	</script>
+    <!-- 动态背景 -->
+    <script type="text/javascript" src="{% static 'blog/background/js/bubbly-bg.js' %}"></script>
+	<script type="text/javascript">
+		bubbly({
+			colorStart: "#fff4e6",
+			colorStop: "#ffe9e4",
+			blur: 1,
+			compose: "source-over",
+			bubbleFunc: () => `hsla(${Math.random() * 50}, 100%, 50%, .3)`
+		});
+	</script>
+	<!-- ajax获取/发表评论 -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+			load_comments();
+		});
+
+		function load_comments() {
+			$.ajax({
+				url:"/comments",
+				data: {
+					"article_id": "{{ data.id }}",
+					"comment_approved": 1
+				},
+				success: function(result) {
+					var comments = result.data;
+					if(comments.length == 0) {
+						var null_str = '<p  class="comment-content" style="color: gray">空空如也，再这么冷漠要哭了TAT。</p>';
+						$("#comments-ul").append($(null_str));
+						return;
+					}
+					for(var i=0;i<comments.length;++i) {
+						var one_comment = '<li id="comments_id_'+ comments[i].id +'"><a class="comment_author" href="'
+                            + comments[i].comment_author_url + '" target="_blank">说道：'
+                            + comments[i].comment_author + '</a><div class="nums"><span>发表于:' + comments[i].create_time
+                            + '</span></div><!-- 此处解决浮动错位 --><div class="clear"></div><div class="comment-content"><p>'
+                            + comments[i].comment_content + '</p></div><div class="nums"><a onclick="reply(this);">回复</a></div><!-- 此处解决浮动错位 --><div class="clear"></div></li><hr />';
+						$("#comments-ul").append($(one_comment));
+					}
+				}
+			});
+		}
+
+		function reload_comments() {
+			$("#commnet_ul").clear();
+			load_comments();
+		}
+
+		function add_comment() {
+			$.ajax({
+				url:"/add_comment",
+				type: "POST",
+				data: {
+					"author": $("#author").val(),
+					"email": $("#email").val(),
+					"url": $("#url").val(),
+					"content": $("#content").val(),
+					"comment_parent": $("#comment_parent").val(),
+					"article_id": $("#article_id").val()
+				},
+				success: function(result) {
+					reload_comments();
+				},
+				error: function(request, msg) {
+					alert("通讯失败，请刷新页面重试。");
+				}
+			});
+		}
+	</script>
+    <!-- 评论信息验证 -->
+    <script>
+        function check_comment() {
+            var author = $("#author").val();
+            var email = $("#email").val();
+            var url = $("#url").val();
+            var content = $("#content").val();
+            if (null == author || "" == author) {
+                alert("请留芳名~");
+                $("#author").focus();
+                return false;
+            } else if (null == email || !isEmail(email)) {
+                alert("相逢即是缘，务必留个正确的邮箱哦~");
+                $("#email").focus();
+                return false;
+            } else if (null == url || "" == url) {
+                alert("留个个人链接吧，QQ空间微博也行啊，让我看看你的风采~");
+                $("#url").focus();
+                return false;
+            } else if (null == content || "" == content) {
+                alert("老兄，此处有声胜无声~");
+                $("#content").focus();
+                return false;
+            } else if (author.toLowerCase().includes("script") ||
+                        email.toLowerCase().includes("script") ||
+                        url.toLowerCase().includes("script") ||
+                        content.toLowerCase().includes("script")) {
+                alert("卧槽，你居然在提交的内容里下毒QAQ！");
+                return false;
+            } else {
+            	add_comment();
+            	return true;
+            }
+        }
+
+        function isEmail(str){
+            var reg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+            return reg.test(str);
+        }
+    </script>
+    
+    <!-- 回复评论 -->
+    <script>
+        function reply(tmp) {
+            var parent_id = $(tmp).parent().parent().attr("id").split("_")[2];
+            var parent_author = $(tmp).parent().parent().children("a")[0].text;
+            var parent_author_url = $(tmp).parent().parent().children("a").attr("href");
+            var append_content = '<p><a href="' + parent_author_url + '" target="_blank" class="">@' + parent_author + ' </a><br></p>';
+            $("#comment_parent").val(parent_id);
+            editor.setValue(append_content);
+            editor.focus();
+            $("#author").focus();
+        }
+    </script>
+
+    <!-- 页面AJAX内容初始化 -->
+	<script type="text/javascript">
+		$("document").ready(function() {
+			load_last_comments();
+		});
+
+		function load_last_comments() {
+			$.ajax({
+				url:"/comments",
+				data: {
+					"last": "true"
+				},
+				success: function(result) {
+					var comments = result.data;
+					if(comments.length == 0) {
+						var null_str = '<p class="comment-content" style="color: gray">空空如也，再这么冷漠要哭了TAT。</p>';
+						$("#last-comments-ul").append($(null_str));
+						return;
+					}
+					for(var i=0;i<comments.length;++i) {
+						var one_comment = '<li><a target="_blank" href="' + comments[i].comment_author_url + '">' + comments[i].comment_author +'</a>在<a href="/' + comments[i].article_url + '">《' + comments[i].article_title + '</a>》中说：' + comments[i].comment_content + '</li><hr>';
+						$("#last-comments-ul").append($(one_comment));
+					}
+				}
+			});
+		}
+	</script>
+    <!-- 给文章里的图片加上类 -->
+    <script>
+        $(".content img").attr("class", "img-responsive img-thumbnail");
+    </script>
+</body>
+</html>

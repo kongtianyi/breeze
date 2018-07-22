@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{ blog_param.title }}</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <!-- 动态背景 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="{% static 'blog/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'blog/breeze.css' %}?v=012">
+</head>
+<body>
+	<div class="row head">
+		<div class="col-lg-8">
+			<h1 class="head-h1"><a href="/">{{ blog_param.title }}</a></h1>
+			<p class="head-p">{{ blog_param.sub_title }}</p>
+		</div>
+		<div class="col-lg-4" id="nav">
+			&nbsp&nbsp
+			<a href="/">主页</a>
+			<a href="/2017/11/19/about">关于我</a>
+			<a href="http://blog.csdn.net/qq_30242609" target="blank">CSDN博客</a>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-9 summerys" id="main">
+				<ul>
+                {% for article in data %}
+                    <li>
+    					<div class="board">
+    						<h2><a href="/{{ article.url }}">{{ article.title }}</a></h2>
+    						<div class="summery">
+      							<div>{{ article.summery|safe }}</div>
+    						</div>
+                            <div>
+                                {% for tag in article.tags %}
+                                    <p class="tags">
+      								    <span class="label label-success">
+      								    <i class="fa fa-tag" aria-hidden="true"></i>
+      								    &nbsp{{ tag }}
+      								    </span>
+      								    &nbsp
+      							    </p>
+                                {% endfor %}
+      							<p class="nums">
+      								<span>发表于：{{ article.create_time }}</span>&nbsp&nbsp&nbsp&nbsp
+      								<i class="fa fa-eye" aria-hidden="true"></i>&nbsp{{ article.uv }}&nbsp&nbsp
+      								<i class="fa fa-comment-o" aria-hidden="true"></i>&nbsp{{ article.comment_count }}
+      							</p>
+      							<!-- 此处解决浮动错位 -->
+      							<div class="clear"></div>
+                            </div>
+    					</div>
+    				</li>
+                {% endfor %}
+  				</ul>
+                <div>
+                    <nav aria-label="Page navigation" class="bpage">
+                        <ul class="pagination" style="margin: 0;">
+                            <li>
+                                <a href="/page/{{ now_page|add:-1 }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            {% for page in pages %}
+                            <li><a href="/page/{{ page }}">{{ page }}</a></li>
+                            {% endfor %}
+                            <li>
+                            <a href="/page/{{ now_page|add:1 }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+			</div>
+			<div class="col-lg-3">
+				<div class="panel panel-success">
+					<div class="panel-heading">文章分类</div>
+					<div class="panel-body">
+						<ul>
+                            {% for category in categorys %}
+                                <li><a href="/categories/{{ category.category_name }}">{{ category.category_name }}({{ category.count }})</a></li>
+                            {% endfor %}
+						</ul>
+					</div>
+				</div>
+				<div class="panel panel-success">
+					<div class="panel-heading">最新评论</div>
+					<div class="panel-body">
+						<ul id="last-comments-ul">
+						</ul>
+					</div>	
+				</div>
+				<div class="panel panel-success">
+					<div class="panel-heading">社交频道</div>
+					<div class="panel-body">
+                        <ul>
+                            <li>
+                                <a href="https://github.com/kongtianyi" target="blank"><i class="fa fa-github fa-2x" aria-hidden="true"></i></a>
+						        <a href="http://weibo.com/u/5484257648" target="blank"><i class="fa fa-weibo fa-2x" aria-hidden="true"></i></a>
+						        <a href="https://twitter.com/KongtianyiCoder" target="blank"><i class="fa fa-twitter fa-2x" aria-hidden="true"></i></a>
+						        <a href="598515595" target="blank"><i class="fa fa-qq fa-2x" aria-hidden="true"></i></a>
+                            </li>
+                        </ul>
+                    </div>
+				</div>
+				<div class="panel panel-success">
+					<div class="panel-heading">友情链接</div>
+					<div class="panel-body">
+                        {% for link in blog_param.friend_links %}
+                            <ul>
+							    <li><a href="{{ link.url }}" target="_blank">{{ link.title }}</a></li>
+						    </ul>
+                        {% endfor %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="foot">
+        <p>{{ blog_param.uv }}个小伙伴来访过，{{ blog_param.pv }}次点击，感谢有你。</p>
+		<p>Copyright © 2017 kongtianyi.</p>
+	</div>
+	<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<!-- 返回顶部按钮 -->
+	<script type="text/javascript" src="{% static 'blog/jquery.goup.js' %}"></script>
+	<script type="text/javascript">
+        $(document).ready(function () {
+            $.goup({
+                trigger: 100,
+                bottomOffset: 50,
+                locationOffset: 100,
+                title: '返回顶部',
+            });
+        });
+	</script>
+    <!-- 动态背景 -->
+    <script type="text/javascript" src="{% static 'blog/background/js/bubbly-bg.js' %}"></script>
+	<script type="text/javascript">
+	bubbly({
+			colorStart: "#fff4e6",
+			colorStop: "#ffe9e4",
+			blur: 1,
+			compose: "source-over",
+			bubbleFunc: () => `hsla(${Math.random() * 50}, 100%, 50%, .3)`
+		});
+	</script>
+	<!-- 页面AJAX内容初始化 -->
+	<script type="text/javascript">
+		$("document").ready(function() {
+			load_last_comments();
+		});
+
+		function load_last_comments() {
+			$.ajax({
+				url:"/comments",
+				data: {
+					"last": "true"
+				},
+				success: function(result) {
+					var comments = result.data;
+					if(comments.length == 0) {
+						var null_str = '<p  class="comment-content" style="color: gray">空空如也，再这么冷漠要哭了TAT。</p>';
+						$("#last-comments-ul").append($(null_str));
+						return;
+					}
+					for(var i=0;i<comments.length;++i) {
+						var one_comment = '<li><a target="_blank" href="' + comments[i].comment_author_url + '">' + comments[i].comment_author +'</a>在<a href="/' + comments[i].article_url + '">《' + comments[i].article_title + '</a>》中说：' + comments[i].comment_content + '</li><hr>';
+						$("#last-comments-ul").append($(one_comment));
+					}
+				}
+			});
+		}
+	</script>
+</body>
+</html>

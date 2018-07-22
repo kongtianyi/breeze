@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>写博客 游客止步</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    {% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static 'blog/simditor-2.3.6/styles/simditor.css' %}" />
+	<link rel="stylesheet" href="{% static 'blog/simditor-markdown-master/styles/simditor-markdown.css' %}" media="screen" charset="utf-8" />
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" rel="stylesheet">
+</head>
+<body>
+	<div class="container">
+		<div class="row clearfix">
+			<div class="col-md-12 column">
+				<form role="form" action="/add_article" method="post">
+					<div class="form-group">
+					 	<label for="title">标题</label>
+					 	<input type="text" class="form-control" id="title" name="title" placeholder="震惊！XXXXXX" autofocus/>
+					</div>
+                    <div class="form-group">
+					 	<label for="short_name">短名称</label>
+					 	<input type="text" class="form-control" id="short_name" name="short_name" placeholder="震惊！XXXXXX" autofocus/>
+					</div>
+					<div class="form-group">
+					 	<label for="category_id">分类</label>
+					 	<input type="text" class="form-control" id="category_id" name="category_id" placeholder="是技术博客还是散文呀？" />
+					</div>
+					<div class="form-group">
+					 	<label for="tags">标签</label>
+					 	<input type="text" class="form-control" id="tags" name="tags" placeholder="逗号隔开呦~" />
+					</div>
+					<textarea id="content" name="content"></textarea>
+					</br>
+					<button type="submit" class="btn btn-primary">发表</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- simditor -->
+	<script type="text/javascript" src="{% static 'blog/simditor-2.3.6/scripts/jquery.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'blog/simditor-2.3.6/scripts/module.js' %}"></script>
+	<script type="text/javascript" src="{% static 'blog/simditor-2.3.6/scripts/hotkeys.js' %}"></script>
+	<script type="text/javascript" src="{% static 'blog/simditor-2.3.6/scripts/uploader.js' %}"></script>
+	<script type="text/javascript" src="{% static 'blog/simditor-2.3.6/scripts/simditor.js' %}"></script>
+	<!-- simditor markdowm -->
+	<script type="text/javascript" src="{% static 'blog/marked-master/lib/marked.js' %}"></script>
+	<script type="text/javascript" src="{% static 'blog/to-markdown-master/dist/to-markdown.js' %}"></script>
+	<script type="text/javascript" src="{% static 'blog/simditor-markdown-master/lib/simditor-markdown.js' %}"></script>
+	<!-- bootstrap -->
+	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+		var editor = new Simditor({
+  			textarea: $('#content'),
+  			pasteImage: true,
+  			upload:{
+            	url: '',
+            	params: null,
+            	fileKey: 'upload_img',
+            	connectionCount: 5,
+            	leaveConfirm: '正在上传图片, 别离开我TAT'
+        	},
+  			placeholder: "开始愉快的写作吧~",
+  			toolbar: ['title', 'bold', 'italic', 'underline', 'strikethrough', 'color', '|', 'ol', 'ul', 'blockquote', 'code', 'table', '|', 'link', 'image', 'hr', '|', 'indent', 'outdent', 'alignment', '|', 'markdown']
+		});
+	</script>
+</body>
+</html>

@@ -226,6 +226,7 @@
 		});
 
 		function load_comments() {
+		    var first_load_flag = true;  // 判断页面是否是第一次加载
 			$.ajax({
 				url:"/comments",
 				data: {
@@ -241,18 +242,26 @@
 					}
 					for(var i=0;i<comments.length;++i) {
 						var one_comment = '<li id="comments_id_'+ comments[i].id +'"><a class="comment_author" href="'
-                            + comments[i].comment_author_url + '" target="_blank">说道：'
-                            + comments[i].comment_author + '</a><div class="nums"><span>发表于:' + comments[i].create_time
+                            + comments[i].comment_author_url + '" target="_blank">'
+                            + comments[i].comment_author + '</a>对<a class="comment_parent_author" href="'
+                            + comments[i].parent_comment_author_url + '" target="_blank">'
+                            + comments[i].parent_comment_author + '</a>说道：<div class="nums"><span>发表于:' + comments[i].create_time
                             + '</span></div><!-- 此处解决浮动错位 --><div class="clear"></div><div class="comment-content"><p>'
                             + comments[i].comment_content + '</p></div><div class="nums"><a onclick="reply(this);">回复</a></div><!-- 此处解决浮动错位 --><div class="clear"></div></li><hr />';
 						$("#comments-ul").append($(one_comment));
 					}
+					if(first_load_flag) {
+					    var url = window.location.toString()
+			            var anchor = url.split("#")[1];
+					    location.href="#"+anchor;
+					    first_load_flag = false;
+                    }
 				}
 			});
 		}
 
 		function reload_comments() {
-			$("#commnet_ul").clear();
+			$("#comments-ul").empty();
 			load_comments();
 		}
 
@@ -270,6 +279,10 @@
 				},
 				success: function(result) {
 					reload_comments();
+					$("#author").val("");
+					$("#email").val("");
+					$("#url").val("");
+					editor.setValue("");
 				},
 				error: function(request, msg) {
 					alert("通讯失败，请刷新页面重试。");
@@ -287,30 +300,26 @@
             if (null == author || "" == author) {
                 alert("请留芳名~");
                 $("#author").focus();
-                return false;
             } else if (null == email || !isEmail(email)) {
                 alert("相逢即是缘，务必留个正确的邮箱哦~");
                 $("#email").focus();
-                return false;
             } else if (null == url || "" == url) {
                 alert("留个个人链接吧，QQ空间微博也行啊，让我看看你的风采~");
                 $("#url").focus();
-                return false;
             } else if (null == content || "" == content) {
                 alert("老兄，此处有声胜无声~");
                 $("#content").focus();
-                return false;
             } else if (author.toLowerCase().includes("script") ||
                         email.toLowerCase().includes("script") ||
                         url.toLowerCase().includes("script") ||
                         content.toLowerCase().includes("script")) {
                 alert("卧槽，你居然在提交的内容里下毒QAQ！");
-                return false;
             } else {
             	add_comment();
-            	return true;
             }
+            return false;
         }
+
 
         function isEmail(str){
             var reg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;

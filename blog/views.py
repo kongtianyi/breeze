@@ -4,6 +4,9 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from blog.models import Articles, Categorys, Comments, Exts
 from blog.decorators import add_blog_pv_uv
+from .tasks import send_mail_task
+from django.conf import settings
+from django.db import connection
 import datetime
 import math
 import json
@@ -140,7 +143,7 @@ def comments(request):
             art = Articles.objects.filter(id=art_id)[0]
             comment_dict["article_url"] = art.url
             comment_dict["article_title"] = art.title
-            comment = data.append(comment_dict)
+            data.append(comment_dict)
         return HttpResponse(json.dumps({
             "status": "success",
             "message": "请求成功",
@@ -149,10 +152,18 @@ def comments(request):
 
     if comment_approved is None or comment_approved == "":
         comment_approved = 1
-    comments = Comments.objects.filter(article_id=article_id, comment_approved=comment_approved)
+    _comments = Comments.objects.filter(article_id=article_id, comment_approved=comment_approved)
     data = list()
-    for comment in comments:
-        comment = data.append(comment.to_json_dict())
+    for comment in _comments:
+        comment_dict = comment.to_json_dict()
+        if 0 != comment.comment_parent and "0" != comment.comment_parent:
+            comment_parent = Comments.objects.filter(id=int(comment.comment_parent))[0]
+            comment_dict["parent_comment_author"] = comment_parent.comment_author
+            comment_dict["parent_comment_author_url"] = comment_parent.comment_author_url
+        else:
+            comment_dict["parent_comment_author"] = settings.SITE_OWNER
+            comment_dict["parent_comment_author_url"] = settings.SITE_URL
+        data.append(comment_dict)
     return HttpResponse(json.dumps({
             "status": "success",
             "message": "请求成功",
@@ -220,14 +231,29 @@ def add_comment(request):
             "status": "error",
             "message": "不知小可与阁下有何过节，何故横施加害？！"
         }), content_type="application/json")
-    Comments.objects.create(article_id=int(article_id), comment_author=comment_author,
-                            comment_author_email=comment_author_email, comment_author_url=comment_author_url,
-                            comment_author_ip=comment_author_ip, comment_content=comment_content,
-                            comment_approved=1, comment_parent=comment_parent)
+    new_comment = Comments.objects.create(article_id=int(article_id), comment_author=comment_author,
+                                          comment_author_email=comment_author_email,
+                                          comment_author_url=comment_author_url,
+                                          comment_author_ip=comment_author_ip, comment_content=comment_content,
+                                          comment_approved=1, comment_parent=comment_parent)
+    with connection.cursor() as cursor:
+        sql = "select last_insert_rowid() from comments"
+        cursor.execute(sql)
+        item = cursor.fetchone()
+        new_comment_id = item[0]
     # 给文章加上一个评论数
-    if Articles.objects.filter(article_id=int(article_id)).update(comment_count=F("comment_count")+1) < 1:
+    if Articles.objects.filter(id=int(article_id)).update(comment_count=F("comment_count")+1) < 1:
         # todo log
         pass
+    # 给被回复者发送邮件提醒
+    _article = Articles.objects.filter(id=int(article_id))[0]
+    if 0 != comment_parent and "0" != comment_parent:
+        parent = Comments.objects.filter(id=int(comment_parent))[0]
+        send_mail_task(parent.comment_author_email, comment_author, parent.comment_author, _article.title, _article.url,
+                       parent.comment_content, comment_content, new_comment_id)
+    else:
+        send_mail_task(settings.SITE_OWNER_EMAIL, comment_author, settings.SITE_OWNER, _article.title, _article.url,
+                       "博文评论", comment_content, new_comment_id)
     return HttpResponse(json.dumps({
         "status": "success",
         "message": "添加评论成功"

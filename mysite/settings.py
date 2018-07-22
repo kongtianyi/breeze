@@ -128,18 +128,18 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
-CELERY_BROKER_URL = "redis://:kongtianyideredis@114.67.225.0:6379/0"
+CELERY_BROKER_URL = "redis://:password@host:port/0"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.163.com'
+EMAIL_HOST = ''
 EMAIL_PORT = 25
 # 发送邮件的邮箱
-EMAIL_HOST_USER = '17862703685@163.com'
+EMAIL_HOST_USER = ''
 # 在邮箱中设置的客户端授权密码
-EMAIL_HOST_PASSWORD = 'kong19960412'
+EMAIL_HOST_PASSWORD = ''
 # 收件人看到的发件人
-EMAIL_FROM = '孔天逸\'s Blog<17862703685@163.com>'
+EMAIL_FROM = ''
 
-SITE_URL = "http://kongtianyi.cn"
-SITE_OWNER = "孔天逸"
-SITE_OWNER_EMAIL = "kongtianyi@foxmail.com"
+SITE_URL = ""
+SITE_OWNER = ""
+SITE_OWNER_EMAIL = ""
